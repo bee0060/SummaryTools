@@ -1,0 +1,12 @@
+/*.suo
+/SummaryTools/obj
+/Service/obj
+/SummaryTools/bin/Debug/SummaryTools.exe
+/SummaryTools/bin/Debug/SummaryTools.exe.config
+/SummaryTools/bin/Debug/SummaryTools.pdb
+/SummaryTools/bin/Debug/SummaryTools.vshost.exe
+/SummaryTools/bin/Debug/SummaryTools.vshost.exe.config
+/SummaryTools/bin/Debug/SummaryTools.vshost.exe.manifest
+/Service/bin
+obj
+bin
