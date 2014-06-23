@@ -5,13 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using NPOI.HSSF.UserModel;
+using Model;
 
 namespace Service
 {
     public  class SheetManager
     {
         private List<HSSFSheet> sheets = new List<HSSFSheet>();
+        private List<STSheet> sheeetsAnalysised = new List<STSheet>();
 
+        private bool hasAnalysis = false;
+        
         public SheetManager(WorkBookManager workBookManager)
         {
             List<HSSFWorkbook> workbooks = workBookManager.Workbooks;
@@ -39,9 +43,26 @@ namespace Service
             }        
         }
 
+        private void AnalysisSheets()
+        {
+
+
+
+            hasAnalysis = true;
+        }
+
         public HSSFSheet this[int index]
         {
             get { return sheets[index]; }
+        }
+
+        public STSheet GetAnalysisSheetAt(int index)
+        { 
+            if(!hasAnalysis)
+            {
+                AnalysisSheets();
+            }
+            return sheeetsAnalysised[index];
         }
 
         public int Count

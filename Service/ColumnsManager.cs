@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    class ColumnsManager
+    public class ColumnsManager
     {
+        private string columnName;
+        private List<string> columnValues;
+
     }
 }
