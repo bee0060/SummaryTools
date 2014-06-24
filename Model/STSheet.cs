@@ -4,71 +4,102 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 
 namespace Model
 {
     public class STSheet  
     {
-        private List<HSSFRow> headerRows = new List<HSSFRow>();
+        private List<IRow> headerRows = new List<IRow>();
         private List<string> dataRowHeaderNames = new List<string>();
         private List<STInformationBlock> blocks = new List<STInformationBlock>();
 
-        public STSheet(HSSFSheet src)
+        private Dictionary<string, int> columnIndexMapping = new Dictionary<string, int>();
+
+        public STSheet(HSSFSheet src, STFormat format)
         {
-            if (src == null)
+            if (src == null || format == null)
             {
                 return;
             }
+            #region 注释代码
+            //int rowsCount = src.PhysicalNumberOfRows;
+            //bool dataStart = false;
 
-            int rowsCount = src.PhysicalNumberOfRows;
 
-            for (int i = 0; i < rowsCount; i++)
-            {
-                HSSFRow currentRow = src.GetRow(i) as HSSFRow;
+            //for (int i = 0; i < rowsCount; i++)
+            //{
+            //    HSSFRow currentRow = src.GetRow(i) as HSSFRow;
 
-                if (currentRow != null)
-                {
-                    int columnPrefix = 0;
-                    foreach(HSSFCell cell in currentRow.Cells)
-                    {
-                        string cellStringValue = cell.StringCellValue;
-                        decimal cellDecimalValue = 0;
-                        if (decimal.TryParse(cellStringValue, out cellDecimalValue))
-                        {
-
-                        }
-                        else
-                        {
-                            columnPrefix++;
-                            if (columnPrefix >= currentRow.Cells.Count / 3)
-                            {
-                                headerRows.Add(currentRow);
-                            }
-                        }
-                    }
+            //    if (currentRow != null)
+            //    {
+            //        int columnPrefix = 0;
+            //        foreach(HSSFCell cell in currentRow.Cells)
+            //        {
+            //            string cellStringValue = cell.StringCellValue;
+            //            decimal cellDecimalValue = 0;
+            //            if (dataStart || decimal.TryParse(cellStringValue, out cellDecimalValue))
+            //            {
+            //                dataStart = true;
+            //            }
+            //            else
+            //            {
+            //                columnPrefix++;
+            //                if (columnPrefix >= currentRow.Cells.Count / 3)
+            //                {
+            //                    headerRows.Add(currentRow);
+            //                    break;
+            //                }
+            //            }
+            //        }
                     
                 
+            //    }
+
+            //}
+            #endregion
+
+            int rowsCount = src.PhysicalNumberOfRows;
+            int headerRowIndex = rowsCount >= format.headerRowIndex ? format.headerRowIndex : -1;
+            IRow headerRow = rowsCount >= format.headerRowIndex ? src.GetRow(format.headerRowIndex) : null;
+            GetHeadersRows(src, headerRowIndex);
+            GetDataRowHeaderNames(headerRow);
+
+
+
+        }
+
+        private void GetHeadersRows(HSSFSheet sheet,int headerRowIndex)
+        {
+            if (sheet != null)
+            {
+                for (int i = 0; i <= headerRowIndex; i++)
+                {
+                    this.headerRows.Add(sheet.GetRow(i));
+                }            
+            }        
+        }
+
+        private void GetDataRowHeaderNames(IRow headerRow)
+        { 
+            //columnIndexMapping
+            if (headerRow != null)
+            { 
+                foreach(ICell cell in headerRow.Cells)
+                {
+                    if (string.IsNullOrWhiteSpace(cell.StringCellValue))
+                    {
+                        columnIndexMapping.Add(cell.StringCellValue, cell.ColumnIndex);
+                    }
                 }
-
-            }
+            }        
         }
 
-        private void GetHeadersRows()
-        { 
-        
-        
-        }
+        private void FillBlocks(ISheet sheet, int dataStartRowIndex)
+        {
+            IRow dataStartRow = sheet.GetRow(dataStartRowIndex);
 
-        private void GetDataRowHeaderNames()
-        { 
-        
-        
-        
-        }
 
-        private void FillBlocks()
-        { 
-        
         
         }
     }
