@@ -10,6 +10,7 @@ namespace Model
     {
         internal int headerRowIndex = -1;
         internal int dataStartRowIndex = -1;
-        internal string[] columns;
+        internal string[] columns = null;
+        internal string groupByColumn = "";
     }
 }

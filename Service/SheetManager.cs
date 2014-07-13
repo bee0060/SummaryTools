@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 using Model;
 
 namespace Service
@@ -12,15 +13,17 @@ namespace Service
     public  class SheetManager
     {
         private List<HSSFSheet> sheets = new List<HSSFSheet>();
-        private List<STSheet> sheeetsAnalysised = new List<STSheet>();
+        private STSheet[] sheetsAnalysised = null;
+        private STFormat sheetFormat = null;
 
         private bool hasAnalysis = false;
-        
-        public SheetManager(WorkBookManager workBookManager)
+
+        public SheetManager(WorkBookManager workBookManager, STFormat format)
         {
             List<HSSFWorkbook> workbooks = workBookManager.Workbooks;
             int tempSheetCount = 0;
             HSSFSheet tempSheet = null;
+            sheetFormat = format;
 
             if (workbooks != null)
             {
@@ -36,19 +39,18 @@ namespace Service
                             if (tempSheet != null)
                             {
                                 sheets.Add(tempSheet);
-                            }                        
+                            }
                         }
-                    }                
+                    }
                 }
-            }        
+            }
+            sheetsAnalysised = new STSheet[sheets.Count];
         }
 
-        private void AnalysisSheets()
+        private void AnalysisSheetAt(int index)
         {
-
-
-
-            hasAnalysis = true;
+            STSheet sheet = new STSheet(sheets[index], sheetFormat);
+            sheetsAnalysised[index] = sheet;
         }
 
         public HSSFSheet this[int index]
@@ -57,17 +59,28 @@ namespace Service
         }
 
         public STSheet GetAnalysisSheetAt(int index)
-        { 
-            if(!hasAnalysis)
+        {
+            if (sheetsAnalysised[index]==null)
             {
-                AnalysisSheets();
+                AnalysisSheetAt(index);
             }
-            return sheeetsAnalysised[index];
+            return sheetsAnalysised[index];
         }
 
         public int Count
         {
             get { return sheets.Count; }
+        }
+
+        public int GetBlocksCount()
+        {
+            int blocks = 0;
+            foreach (STSheet sheet in sheetsAnalysised)
+            {
+                blocks += sheet.GetBlocksCount();
+            }
+
+            return blocks;
         }
     }
 }

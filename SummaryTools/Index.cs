@@ -12,6 +12,7 @@ using Service;
 using NPOI.HSSF;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Model;
 
 namespace SummaryTools
 {
@@ -31,14 +32,23 @@ namespace SummaryTools
         private void btnOpenTables_Click(object sender, EventArgs e)
         {
             DateTime dtStart = DateTime.Now;
-
+            STFormat format = new STFormat();
 
             WorkBookManager wbm = new WorkBookManager(txtSrcPath.Text);
-            SheetManager sm = new SheetManager(wbm);
+            SheetManager sm = new SheetManager(wbm, format);
 
-            txtOutput.Text = string.Format("一共找到{0}个电子表格,其中共包含{1}个表.", 
+            StringBuilder sbOutput = new StringBuilder();
+
+            sbOutput.AppendFormat("一共找到{0}个电子表格,其中共包含{1}个表.", 
                 wbm.Count, sm.Count);
             DateTime dtEnd = DateTime.Now;
+
+            STSheet target = sm.GetAnalysisSheetAt(0);
+
+            sbOutput.AppendLine();
+            sbOutput.AppendFormat("扫描到{0}个信息块", sm.GetBlocksCount());
+
+            txtOutput.Text = sbOutput.ToString();
 
             txtUsedTime.Text = string.Format("{0}秒", (dtEnd - dtStart).TotalSeconds);
         }
